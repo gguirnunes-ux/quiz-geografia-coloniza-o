@@ -30,12 +30,7 @@
             text-align: center;
             margin: 15px 0 25px 0;
         }
-        .qr-container p {
-            margin: 8px 0 12px 0;
-            color: #64748b;
-        }
-        /* resto do estilo permanece igual */
-        .quiz-area { padding: 30px; }
+        .quiz-area { padding: 40px 30px; }
         .progress { text-align: center; margin-bottom: 20px; font-size: 16px; color: #64748b; }
         .question { font-size: 22px; margin-bottom: 30px; line-height: 1.4; }
         .options { display: flex; flex-direction: column; gap: 12px; }
@@ -62,21 +57,29 @@
             font-size: 18px;
             cursor: pointer;
         }
+        .next-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         .result { text-align: center; padding: 40px 30px; }
         .score { font-size: 48px; font-weight: bold; color: #0ea5e9; margin: 20px 0; }
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+        .correct { color: #16a34a; }
+        .wrong { color: #ef4444; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🗺️ Quiz Geografia: Colonização das Américas</h1>
-            <p>Teste seus conhecimentos!</p>
+            <p>Teste seus conhecimentos sobre a geografia da colonização!</p>
             
-            <!-- QR Code aqui -->
             <div class="qr-container">
                 <p><strong>📱 Escaneie para acessar no celular:</strong></p>
-                <img id="qrcode" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://seu-usuario.github.io/quiz-geografia-colonizacao/quiz-geografia-colonizacao.html" 
-                     alt="QR Code do Quiz" style="border: 3px solid #0ea5e9; border-radius: 12px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://SEUUSUARIO.github.io/quiz-geografia-colonizacao/" 
+                     alt="QR Code" style="border: 4px solid #0ea5e9; border-radius: 12px; padding: 8px; background: white;">
             </div>
         </header>
 
@@ -94,3 +97,100 @@
             <div class="score" id="score">0/10</div>
             <p id="feedback"></p>
             <div class="review" id="review"></div>
+            <button class="next-btn" onclick="restartQuiz()" style="margin-top: 30px;">Fazer o quiz novamente</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "Em qual continente Cristóvão Colombo chegou em 1492?", options: ["Ásia", "América", "África", "Oceania"], correct: 1 },
+            { question: "Qual é o maior rio da América do Sul, muito importante durante a colonização?", options: ["Rio Mississippi", "Rio Amazonas", "Rio da Prata", "Rio São Francisco"], correct: 1 },
+            { question: "Onde fica a região do Caribe, onde começaram muitas colônias europeias?", options: ["América do Norte", "América Central", "América do Sul", "América Andina"], correct: 1 },
+            { question: "Qual cordilheira foi extremamente importante para os impérios Inca e para a colonização espanhola?", options: ["Montanhas Rochosas", "Cordilheira dos Andes", "Serra do Mar", "Appalachians"], correct: 1 },
+            { question: "Qual era o principal produto agrícola da colônia portuguesa no litoral brasileiro?", options: ["Café", "Cana-de-açúcar", "Algodão", "Tabaco"], correct: 1 },
+            { question: "Qual baía foi fundamental para a fundação da cidade do Rio de Janeiro?", options: ["Baía de Guanabara", "Baía de Todos os Santos", "Baía de Montevidéu", "Baía de Hudson"], correct: 0 },
+            { question: "O Tratado de Tordesilhas dividiu a América entre quais dois países?", options: ["França e Inglaterra", "Portugal e Espanha", "Holanda e Inglaterra", "Espanha e Itália"], correct: 1 },
+            { question: "Qual região da América do Norte era conhecida como Nova Inglaterra?", options: ["Sul dos EUA", "Costa Leste (atual Nordeste dos EUA)", "Canadá Ocidental", "Flórida"], correct: 1 },
+            { question: "Qual grande planície da América do Sul foi muito disputada durante a colonização?", options: ["Pampa", "Patagônia", "Sertão Nordestino", "Pantanal"], correct: 0 },
+            { question: "Qual rota marítima era usada para o transporte de escravos da África para as Américas?", options: ["Rota do Cabo", "Triângulo Atlântico", "Rota do Pacífico", "Caminho das Índias"], correct: 1 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(-1);
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById("current").textContent = currentQuestion + 1;
+            document.getElementById("question-text").textContent = q.question;
+            
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                optionsDiv.appendChild(btn);
+            });
+            
+            document.getElementById("next-btn").disabled = true;
+        }
+
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            const buttons = document.querySelectorAll("#options button");
+            buttons.forEach((btn, i) => btn.classList.toggle("selected", i === index));
+            
+            if (index === questions[currentQuestion].correct) score++;
+            document.getElementById("next-btn").disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById("quiz-screen").style.display = "none";
+            document.getElementById("result-screen").style.display = "block";
+            
+            document.getElementById("score").textContent = `${score}/10`;
+            
+            const feedback = score >= 8 ? "Excelente! Você domina a geografia da colonização! 🗺️" :
+                            score >= 5 ? "Muito bom! Você sabe bastante." : "Legal! Vale a pena revisar os mapas.";
+            document.getElementById("feedback").textContent = feedback;
+
+            const reviewDiv = document.getElementById("review");
+            reviewDiv.innerHTML = "<h3>Resumo das perguntas:</h3>";
+            
+            questions.forEach((q, i) => {
+                const isCorrect = userAnswers[i] === q.correct;
+                const item = document.createElement("div");
+                item.className = `review-item ${isCorrect ? 'correct' : 'wrong'}`;
+                item.innerHTML = `
+                    <strong>${i+1}. ${q.question}</strong><br>
+                    Sua resposta: <strong>${q.options[userAnswers[i]] || "Não respondeu"}</strong><br>
+                    ${isCorrect ? '✅ Correto!' : `❌ Resposta certa: <strong>${q.options[q.correct]}</strong>`}
+                `;
+                reviewDiv.appendChild(item);
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(-1);
+            document.getElementById("quiz-screen").style.display = "block";
+            document.getElementById("result-screen").style.display = "none";
+            loadQuestion();
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
