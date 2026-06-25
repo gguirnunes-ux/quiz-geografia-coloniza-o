@@ -75,10 +75,12 @@
         <header>
             <h1>🗺️ Quiz Geografia: Colonização das Américas</h1>
             <p>Teste seus conhecimentos sobre a geografia da colonização!</p>
-            
+           
             <div class="qr-container">
                 <p><strong>📱 Escaneie para acessar no celular:</strong></p>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://GuilhermeRodrigues.github.io/quiz-geografia-colonizacao/" 
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://gguirnunes-ux.github.io/quiz-geografia-coloniza-o/" 
+                     alt="QR Code do Quiz" 
+                     style="border: 4px solid #0ea5e9; border-radius: 12px; padding: 8px; background: white;">
             </div>
         </header>
 
@@ -121,17 +123,17 @@
         function loadQuestion() {
             document.getElementById("current").textContent = currentQuestion + 1;
             document.getElementById("question-text").textContent = questions[currentQuestion].question;
-            
+           
             const optionsDiv = document.getElementById("options");
             optionsDiv.innerHTML = "";
-            
+           
             questions[currentQuestion].options.forEach((option, index) => {
                 const btn = document.createElement("button");
                 btn.textContent = option;
                 btn.onclick = () => selectAnswer(index);
                 optionsDiv.appendChild(btn);
             });
-            
+           
             document.getElementById("next-btn").disabled = true;
         }
 
@@ -139,7 +141,7 @@
             userAnswers[currentQuestion] = index;
             const buttons = document.querySelectorAll("#options button");
             buttons.forEach((btn, i) => btn.classList.toggle("selected", i === index));
-            
+           
             if (index === questions[currentQuestion].correct) score++;
             document.getElementById("next-btn").disabled = false;
         }
@@ -156,10 +158,10 @@
         function showResults() {
             document.getElementById("quiz-screen").style.display = "none";
             document.getElementById("result-screen").style.display = "block";
-            
+           
             document.getElementById("score").textContent = `${score}/10`;
-            
-            const feedback = score >= 8 ? "Excelente! Você domina a geografia! 🗺️" : 
+           
+            const feedback = score >= 8 ? "Excelente! Você domina a geografia! 🗺️" :
                             score >= 5 ? "Muito bom!" : "Vale a pena revisar os mapas!";
             document.getElementById("feedback").textContent = feedback;
 
